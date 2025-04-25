@@ -102,10 +102,26 @@ namespace HorionInjector
                         processes = Process.GetProcessesByName("Minecraft.Windows");
                         Thread.Sleep(10);
                     }
-                    Thread.Sleep(3000);
                 }).Wait();
+                processes = Process.GetProcessesByName("Minecraft.Windows");
             }
             var process = processes.First(p => p.Responding);
+
+            SetStatus("loading modules");
+            while (true)
+            {
+                try
+                {
+                    process.Refresh();
+                    if (process.Modules.Count > 165)
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error refreshing modules: " + ex.Message);
+                }
+                Thread.Sleep(100);
+            }
 
             for (int i = 0; i < process.Modules.Count; i++)
             {
